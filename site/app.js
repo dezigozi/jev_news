@@ -120,18 +120,23 @@ export function init({ doc, data, storage, now = Date.now(), history = null, ini
   function itemNode(item, { showGenre = false } = {}) {
     const li = el("li", `item${read.has(item.id) ? " read" : ""}`);
     li.dataset.g = item.g ?? "";
-    const link = el("a", "title", item.t);
+    // 英語の見出しは、訳があれば日本語を大きく出し、原文を下に小さく添える
+    const link = el("a", "title", item.ja ?? item.t);
     link.href = item.u;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
-    if (item.en) link.lang = "en";
+    if (item.en && !item.ja) link.lang = "en";
     link.addEventListener("click", () => {
       read.add(item.id);
       saveRead(storage, read);
       li.classList.add("read");
     });
     li.append(link);
-    if (item.ja) li.append(el("p", "ja", item.ja));
+    if (item.ja) {
+      const original = el("p", "original", item.t);
+      if (item.en) original.lang = "en";
+      li.append(original);
+    }
     const meta = el("p", "meta");
     if (showGenre && item.g) meta.append(el("span", "tag", genreName.get(item.g) ?? item.g));
     meta.append(el("span", "source", item.s));

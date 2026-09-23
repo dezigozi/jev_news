@@ -195,7 +195,7 @@ body {
 }
 .title:hover { text-decoration: underline; }
 .title:visited, .item.read .title { color: var(--read); font-weight: 500; }
-.ja { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+.original { margin: 2px 0 0; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
 .meta { margin: 4px 0 0; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0 8px; }
 .meta span + span::before { content: "·"; margin-right: 8px; }
 .tag { color: var(--gc); font-weight: 600; }

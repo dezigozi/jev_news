@@ -101,18 +101,30 @@ describe("画面", () => {
     const { doc, titles } = mount();
     assert.match(doc.getElementById("updated").textContent, /更新 .*（12分前）· 8本/);
     assert.equal(doc.querySelector(".view-title").textContent, "きょうのひろがり");
-    assert.deepEqual(titles(), ["量子コンピューターの新方式", "新しいスマホが発売", "EU renews Russia sanctions", "有名俳優を逮捕", "地裁で判決"]);
+    assert.deepEqual(titles(), ["量子コンピューターの新方式", "新しいスマホが発売", "EU、対ロシア制裁を延長", "有名俳優を逮捕", "地裁で判決"]);
     const fashion = doc.querySelector('.digest[data-g="fashion"]');
     assert.equal(fashion.querySelector(".empty").textContent, "取得できず");
     assert.equal(doc.getElementById("controls").hidden, true);
     assert.equal(doc.querySelector('.chip[aria-pressed="true"]').textContent, "TOP");
   });
 
-  it("英語の見出しには訳を添え、媒体・時刻・ほか◯件を出す", () => {
+  it("英語の見出しは訳を大きく、原文を下に小さく出す。訳が無ければ英語のまま", () => {
     const { doc } = mount();
     const world = doc.querySelector('.digest[data-g="world"] .item');
-    assert.equal(world.querySelector(".ja").textContent, "EU、対ロシア制裁を延長");
-    assert.equal(world.querySelector(".title").getAttribute("lang"), "en");
+    assert.equal(world.querySelector(".title").textContent, "EU、対ロシア制裁を延長");
+    assert.equal(world.querySelector(".title").getAttribute("lang"), null);
+    assert.equal(world.querySelector(".original").textContent, "EU renews Russia sanctions");
+    assert.equal(world.querySelector(".original").getAttribute("lang"), "en");
+
+    doc.querySelector('.digest[data-g="world"] .to-genre').click();
+    const untranslated = doc.querySelectorAll("#view .item")[1];
+    assert.equal(untranslated.querySelector(".title").textContent, "Old story");
+    assert.equal(untranslated.querySelector(".title").getAttribute("lang"), "en");
+    assert.equal(untranslated.querySelector(".original"), null);
+  });
+
+  it("媒体・時刻・ほか◯件を出す", () => {
+    const { doc } = mount();
     const tech = doc.querySelectorAll('.digest[data-g="tech"] .item')[1];
     assert.deepEqual([...tech.querySelectorAll(".meta span")].map((s) => s.textContent), ["B新聞", "2時間前", "ほか3件"]);
     assert.equal(tech.querySelector(".title").getAttribute("target"), "_blank");
@@ -149,7 +161,7 @@ describe("画面", () => {
   it("「もっと見る」とアドレスの #ジャンル からもジャンルを開ける", () => {
     const { doc, titles } = mount();
     doc.querySelector('.digest[data-g="world"] .to-genre').click();
-    assert.deepEqual(titles(), ["EU renews Russia sanctions", "Old story"]);
+    assert.deepEqual(titles(), ["EU、対ロシア制裁を延長", "Old story"]);
 
     const opened = mount({ initialHash: "#world" });
     assert.equal(opened.doc.querySelector(".view-title").textContent, "国際・海外");
@@ -163,7 +175,7 @@ describe("画面", () => {
     search.value = "制裁";
     search.dispatchEvent(new doc.defaultView.Event("input"));
     assert.equal(doc.querySelector(".view-title").textContent, "「制裁」");
-    assert.deepEqual(titles(), ["EU renews Russia sanctions"]);
+    assert.deepEqual(titles(), ["EU、対ロシア制裁を延長"]);
     assert.equal(doc.querySelector("#view .tag").textContent, "国際・海外");
     assert.equal(doc.querySelector('.chip[aria-pressed="true"]'), null);
 
