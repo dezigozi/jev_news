@@ -5,7 +5,7 @@
 
 ## 仕組み
 - GitHub Actions（`.github/workflows/update.yml`）が毎時17分に `npm run build` → GitHub Pages に配信。URL: https://dezigozi.github.io/jev_news/
-- `src/build.js` の流れ：RSS 26本を取得（`src/feeds.js`）→ 重複をまとめる（`src/dedupe.js`）→ 新着だけ Jev に聞く（`src/classify.js`）→ 英語は Groq で訳す（`src/translate.js`）→ 5日分を `dist/data/news.json` に書き出し、`site/` をそのまま `dist/` にコピー
+- `src/build.js` の流れ：RSS 26本を取得（音楽ナタリーは GitHub から HTTP 405 になるため Google ニュース検索で代替）（`src/feeds.js`）→ 重複をまとめる（`src/dedupe.js`）→ 新着だけ Jev に聞く（`src/classify.js`）→ 英語は Groq で訳す（`src/translate.js`）→ 5日分を `dist/data/news.json` に書き出し、`site/` をそのまま `dist/` にコピー
 - Jev への質問は1見出し1リクエストで3つ：`genre`（16ジャンルから選ぶ）／`insight`（知見が広がるか＝発見度）／`buzz`（世間で話題か＝話題性）
 - 前回までの結果は `.cache/state.json`。Actions では `actions/cache` に `state-<run_id>` で保存し、`restore-keys: state-` で一番新しいものを読み戻す
 - 画面は `site/`（ビルド不要の HTML＋JS＋CSS）。`site/app.js` は Node からも import できる（テストで使う）。ブラウザでだけ `start()` が動く

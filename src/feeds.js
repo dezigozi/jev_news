@@ -20,6 +20,8 @@ export const FEEDS = [
   { id: "gn_q_food", name: "Googleニュース検索 グルメ・旅行", url: googleSearch("グルメ OR 旅行"), lang: "ja", hint: "food" },
   { id: "gn_q_learning", name: "Googleニュース検索 歴史・教養", url: googleSearch("歴史 OR 教養"), lang: "ja", hint: "learning" },
   { id: "gn_q_life", name: "Googleニュース検索 節約・家計", url: googleSearch("節約 OR 家計"), lang: "ja", hint: "life" },
+  // 音楽ナタリーは GitHub のサーバーからだと HTTP 405 で断られるので、検索で代わりに拾う
+  { id: "gn_q_culture", name: "Googleニュース検索 音楽・映画・アニメ", url: googleSearch("音楽 OR 映画 OR アニメ"), lang: "ja", hint: "culture" },
   { id: "hatena_hot", name: "はてブ 総合", url: "https://b.hatena.ne.jp/hotentry.rss", lang: "ja", hint: null },
   { id: "hatena_life", name: "はてブ 暮らし", url: "https://b.hatena.ne.jp/hotentry/life.rss", lang: "ja", hint: "life" },
   { id: "hatena_knowledge", name: "はてブ 学び", url: "https://b.hatena.ne.jp/hotentry/knowledge.rss", lang: "ja", hint: "learning" },
@@ -28,7 +30,6 @@ export const FEEDS = [
   { id: "fashionsnap", name: "FASHIONSNAP", url: "https://www.fashionsnap.com/rss.xml", lang: "ja", hint: "fashion" },
   { id: "itmedia", name: "ITmedia", url: "https://rss.itmedia.co.jp/rss/2.0/itmedia_all.xml", lang: "ja", hint: "tech" },
   { id: "gigazine", name: "GIGAZINE", url: "https://gigazine.net/news/rss_2.0/", lang: "ja", hint: "tech" },
-  { id: "natalie_music", name: "音楽ナタリー", url: "https://natalie.mu/music/feed/news", lang: "ja", hint: "culture" },
   { id: "bbc_world", name: "BBC World", url: "https://feeds.bbci.co.uk/news/world/rss.xml", lang: "en", hint: "world" },
   { id: "gn_us", name: "Google News US", url: "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en", lang: "en", hint: "world" },
   { id: "gn_uk", name: "Google News UK", url: "https://news.google.com/rss?hl=en-GB&gl=GB&ceid=GB:en", lang: "en", hint: "world" }
