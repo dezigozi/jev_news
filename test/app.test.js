@@ -105,7 +105,7 @@ describe("画面", () => {
     const fashion = doc.querySelector('.digest[data-g="fashion"]');
     assert.equal(fashion.querySelector(".empty").textContent, "取得できず");
     assert.equal(doc.getElementById("controls").hidden, true);
-    assert.equal(doc.querySelector('.chip[aria-pressed="true"]').textContent, "ひろがり");
+    assert.equal(doc.querySelector('.chip[aria-pressed="true"]').textContent, "TOP");
   });
 
   it("英語の見出しには訳を添え、媒体・時刻・ほか◯件を出す", () => {

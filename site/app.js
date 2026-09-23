@@ -217,7 +217,7 @@ export function init({ doc, data, storage, now = Date.now(), history = null, ini
       chip.addEventListener("click", () => go(id));
       chips.append(chip);
     };
-    make("digest", "ひろがり");
+    make("digest", "TOP");
     for (const genre of genres) make(genre.id, genre.name);
   }
 
