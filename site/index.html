@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141517" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="じぇぶニュース">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>じぇぶニュース</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="masthead">
+  <h1 class="brand"><button type="button" id="home" class="brand-button">じぇぶニュース</button></h1>
+  <p class="updated" id="updated">読み込み中…</p>
+</header>
+<div class="bar" id="bar">
+  <label class="search">
+    <span class="visually-hidden">見出しを検索</span>
+    <input type="search" id="search" placeholder="5日分の見出しから探す" autocomplete="off" enterkeyhint="search">
+  </label>
+  <nav class="chips" id="chips" aria-label="ジャンル"></nav>
+</div>
+<main class="main">
+  <div id="head"></div>
+  <div class="controls" id="controls" hidden>
+    <div class="sort" role="group" aria-label="並び順">
+      <button type="button" data-sort="rank">発見度順</button>
+      <button type="button" data-sort="time">新着順</button>
+    </div>
+    <label class="low-toggle" id="low-toggle"><input type="checkbox" id="show-low"> <span id="low-label">小ネタ・宣伝も出す</span></label>
+  </div>
+  <div id="view"></div>
+</main>
+<footer class="footer">
+  <details id="feeds"><summary>取得元の状況</summary><ul id="feed-list"></ul></details>
+  <p>見出しの仕分けは Jev、英語の訳は Groq。記事は各社のサイトで開きます。</p>
+</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>

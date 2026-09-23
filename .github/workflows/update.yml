@@ -1,0 +1,68 @@
+name: update
+
+# 毎時ニュースを集めて Jev で分類し、GitHub Pages に配信する
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 前の回が終わるまで次の回は待つ（前回の結果を引き継ぐため、同時に走らせない）
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # 前回までの分類結果。実行ごとに別の名前で保存し、一番新しいものを読み戻す
+      - uses: actions/cache/restore@v6
+        with:
+          path: .cache
+          key: state-${{ github.run_id }}
+          restore-keys: state-
+
+      - name: build
+        run: npm run build
+        env:
+          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+      - uses: actions/cache/save@v6
+        if: ${{ !cancelled() && hashFiles('.cache/state.json') != '' }}
+        with:
+          path: .cache
+          key: state-${{ github.run_id }}-${{ github.run_attempt }}
+
+      # 分類が全滅して build が失敗扱いでも、書き出せたサイトは配信する（実行は失敗のまま残るので気づける）
+      - uses: actions/configure-pages@v6
+        if: ${{ !cancelled() && hashFiles('dist/data/news.json') != '' }}
+
+      - uses: actions/upload-pages-artifact@v5
+        if: ${{ !cancelled() && hashFiles('dist/data/news.json') != '' }}
+        with:
+          path: dist
+
+      - id: deploy
+        uses: actions/deploy-pages@v5
+        if: ${{ !cancelled() && hashFiles('dist/data/news.json') != '' }}
