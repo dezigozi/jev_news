@@ -44,10 +44,19 @@ export function readTranslations(content, batch) {
   return result;
 }
 
+// 待つ時間。429 のときは Groq が retry-after（秒）で指定してくるので、それを守る（長すぎるときは60秒で打ち切る）
+export function retryDelay(response, attempt) {
+  const seconds = Number(response?.headers?.get?.("retry-after"));
+  if (Number.isFinite(seconds) && seconds > 0) return Math.min(seconds, 60) * 1000;
+  return 1000 * 2 ** attempt;
+}
+
 async function callGroq(body, { apiKey, fetchImpl, sleep, timeoutMs, retries }) {
   let lastError;
+  let delay = 0;
   for (let attempt = 0; attempt <= retries; attempt += 1) {
-    if (attempt > 0) await sleep(1000 * 2 ** (attempt - 1));
+    if (attempt > 0) await sleep(delay);
+    delay = retryDelay(null, attempt);
     let response;
     try {
       response = await fetchImpl(GROQ_ENDPOINT, {
@@ -68,6 +77,7 @@ async function callGroq(body, { apiKey, fetchImpl, sleep, timeoutMs, retries }) 
     }
     lastError = new Error(`Groq API が HTTP ${response.status}`);
     if (response.status !== 429 && response.status < 500) throw lastError;
+    delay = retryDelay(response, attempt);
   }
   throw lastError;
 }

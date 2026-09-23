@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { buildRequest, GROQ_ENDPOINT, readTranslations, translateAll } from "../src/translate.js";
+import { buildRequest, GROQ_ENDPOINT, readTranslations, retryDelay, translateAll } from "../src/translate.js";
 
 const en = (id, title) => ({ id, title, lang: "en", ja: null });
 
@@ -49,6 +49,25 @@ describe("translateAll", () => {
     assert.equal(calls[0].auth, "Bearer gk");
     assert.deepEqual(records.map((r) => r.ja), ["訳a", "訳b", null]);
     assert.deepEqual(result, { ok: 2, failed: 1, errors: [] });
+  });
+
+  it("429 のときは retry-after の秒数だけ待つ（60秒で打ち切り、無ければ倍々で待つ）", async () => {
+    const headers = (value) => ({ headers: { get: (name) => (name === "retry-after" ? value : null) } });
+    assert.equal(retryDelay(headers("7"), 0), 7000);
+    assert.equal(retryDelay(headers("300"), 0), 60000);
+    assert.equal(retryDelay(headers(null), 1), 2000);
+    assert.equal(retryDelay(null, 0), 1000);
+
+    const waits = [];
+    let calls = 0;
+    const fetchImpl = async () => {
+      calls += 1;
+      if (calls === 1) return { ...reply("", 429), ...headers("7") };
+      return reply(JSON.stringify({ items: [{ id: "a", ja: "訳" }] }));
+    };
+    const result = await translateAll([en("a", "A")], { apiKey: "k", fetchImpl, sleep: async (ms) => waits.push(ms) });
+    assert.equal(result.ok, 1);
+    assert.deepEqual(waits, [7000]);
   });
 
   it("429 はリトライし、401 はすぐあきらめてエラーに残す", async () => {
