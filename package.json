@@ -16,6 +16,6 @@
     "rss-parser": "3.13.0"
   },
   "devDependencies": {
-    "happy-dom": "20.14.5"
+    "happy-dom": "^21.0.4"
   }
 }
